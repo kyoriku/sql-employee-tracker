@@ -1,4 +1,5 @@
 const inquirer = require('inquirer');
+const queries = require('./queries');
 
 function startApp(connection) {
   inquirer
@@ -73,4 +74,11 @@ function startApp(connection) {
           process.exit();
       }
     })
+    .catch((error) => {
+      console.error('\x1b[31mError encountered during user interaction:\x1b[0m', error.message);
+    });
 }
+
+module.exports = {
+  startApp,
+};
