@@ -14,7 +14,7 @@ function startApp(connection) {
         'Add a role',
         'Add an employee',
         'Update an employee role',
-        'Update an employee manager',
+        'Update employee managers',
         'View employees by manager',
         'View employees by department',
         'Delete a department',
@@ -23,5 +23,54 @@ function startApp(connection) {
         'View total utilized budget of a department',
         'Exit',
       ],
+    })
+    .then((selected) => {
+      switch (selected.action) {
+        case 'View all departments':
+          queries.viewAllDepartments.call(this, connection, startApp);
+          break;
+        case 'View all roles':
+          queries.viewAllRoles.call(this, connection, startApp);
+          break;
+        case 'View all employees':
+          queries.viewAllEmployees.call(this, connection, startApp);
+          break;
+        case 'Add a department':
+          queries.addDepartment.call(this, connection, startApp);
+          break;
+        case 'Add a role':
+          queries.addRole.call(this, connection, startApp);
+          break;
+        case 'Add an employee':
+          queries.addEmployee.call(this, connection, startApp);
+          break;
+        case 'Update an employee role':
+          queries.updateEmployeeRole.call(this, connection, startApp);
+          break;
+        case 'Update employee managers':
+          queries.updateEmployeeManager.call(this, connection, startApp);
+          break;
+        case 'View employees by manager':
+          queries.viewEmployeesByManager.call(this, connection, startApp);
+          break;
+        case 'View employees by department':
+          queries.viewEmployeesByDepartment.call(this, connection, startApp);
+          break;
+        case 'Delete a department':
+          queries.deleteDepartment.call(this, connection, startApp);
+          break;
+        case 'Delete a role':
+          queries.deleteRole.call(this, connection, startApp);
+          break;
+        case 'Delete an employee':
+          queries.deleteEmployee.call(this, connection, startApp);
+          break;
+        case 'View total utilized budget of a department':
+          queries.viewDepartmentBudget.call(this, connection, startApp);
+          break;
+        case 'Exit':
+          console.log('\x1b[32mGoodbye!\x1b[0m');
+          process.exit();
+      }
     })
 }
