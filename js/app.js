@@ -76,6 +76,7 @@ function startApp(connection) {
     })
     .catch((error) => {
       console.error('\x1b[31mError encountered during user interaction:\x1b[0m', error.message);
+      return startApp(connection)
     });
 }
 
