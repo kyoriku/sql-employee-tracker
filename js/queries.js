@@ -110,6 +110,33 @@ function viewAllEmployees(connection, startApp) {
   });
 }
 
+function addDepartment(connection, startApp) {
+  inquirer
+    .prompt({
+      type: "input",
+      name: "name",
+      message: "Enter the name of the new department:",
+      validate: (input) => validateInput(input, 'Please enter a valid department name.')
+    })
+    .then((answer) => {
+      const sql = "INSERT INTO department (name) VALUES (?)";
+      const values = [answer.name.trim()];
+
+      connection.query(sql, values, (error) => {
+        if (error) {
+          console.error("Error adding department:", error.message);
+        } else {
+          console.log("\x1b[32mDepartment added successfully!\x1b[0m");
+        }
+        startApp.call(this, connection);
+      });
+    })
+    .catch((error) => {
+      console.error("Error in inquirer prompt:", error.message);
+      startApp.call(this, connection);
+    });
+}
+
 function displayTable(rows, headers, colWidths, rowFormatter) {
   const table = new Table({
     head: headers,
@@ -123,8 +150,16 @@ function displayTable(rows, headers, colWidths, rowFormatter) {
   console.log(table.toString());
 }
 
+function validateInput(input, errorMessage) {
+  if (!/^[a-zA-Z\s]+$/.test(input.trim()) || !/^[^\d]+$/.test(input.trim())) {
+    return errorMessage;
+  }
+  return true;
+}
+
 module.exports = {
   viewAllDepartments,
   viewAllRoles,
   viewAllEmployees,
+  addDepartment,
 }
