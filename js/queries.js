@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const Table = require('cli-table3');
+const { displayTable, validateInput, validateSalary } = require('./utils');
 
 function viewAllDepartments(connection, startApp) {
   const query = 'SELECT * FROM department';
@@ -195,31 +195,83 @@ function addRole(connection, startApp) {
   });
 }
 
-function displayTable(rows, headers, colWidths, rowFormatter) {
-  const table = new Table({
-    head: headers,
-    colWidths: colWidths,
+function addEmployee(connection, startApp) {
+  const rolesQuery = 'SELECT id, title FROM role';
+  const employeesQuery = 'SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee';
+
+  connection.query(rolesQuery, (error, roleResults) => {
+    if (error) {
+      console.error('\x1b[31mError retrieving role data:\x1b[0m', error.message);
+      startApp(connection);
+    }
+
+    const roles = roleResults.map(({ id, title }) => ({
+      name: title,
+      value: id,
+    }));
+
+    connection.query(employeesQuery, (error, employeeResults) => {
+      if (error) {
+        console.error('\x1b[31mError retrieving employee data:\x1b[0m', error.message);
+        startApp(connection);
+      }
+
+      const managers = employeeResults.map(({ id, name }) => ({
+        name,
+        value: id,
+      }));
+
+      inquirer
+        .prompt([
+          {
+            type: 'input',
+            name: 'firstName',
+            message: "Enter the employee's first name:",
+            validate: (input) => validateInput(input, '\x1b[31mPlease enter a valid first name.\x1b[0m'),
+          },
+          {
+            type: 'input',
+            name: 'lastName',
+            message: "Enter the employee's last name:",
+            validate: (input) => validateInput(input, '\x1b[31mPlease enter a valid last name.\x1b[0m'),
+          },
+          {
+            type: 'list',
+            name: 'roleId',
+            message: 'Select the employee role:',
+            choices: roles,
+          },
+          {
+            type: 'list',
+            name: 'managerId',
+            message: 'Select the employee manager:',
+            choices: [...managers, { name: 'None', value: null }],
+          },
+        ])
+        .then((answers) => {
+          const sql = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
+          const values = [
+            answers.firstName,
+            answers.lastName,
+            answers.roleId,
+            answers.managerId,
+          ];
+
+          connection.query(sql, values, (error) => {
+            if (error) {
+              console.error('\x1b[31mError adding employee:\x1b[0m', error.message);
+            } else {
+              console.log('\x1b[32mEmployee added successfully!\x1b[0m');
+            }
+            startApp(connection);
+          });
+        })
+        .catch((error) => {
+          console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
+          startApp(connection);
+        });
+    });
   });
-
-  rows.forEach((row) => {
-    table.push(rowFormatter ? rowFormatter(row) : Object.values(row));
-  });
-
-  console.log(table.toString());
-}
-
-function validateInput(input, error) {
-  if (!/^[a-zA-Z\s]+$/.test(input.trim())) {
-    return error;
-  }
-  return true;
-}
-
-function validateSalary(input, error) {
-  if (input.trim() === '' || isNaN(input) || parseFloat(input) <= 0) {
-    return error;
-  }
-  return true;
 }
 
 module.exports = {
@@ -228,4 +280,5 @@ module.exports = {
   viewAllEmployees,
   addDepartment,
   addRole,
+  addEmployee,
 }
