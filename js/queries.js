@@ -7,14 +7,14 @@ function viewAllDepartments(connection, startApp) {
   connection.query(query, (error, results) => {
     if (error) {
       console.error("\x1b[31mError retrieving departments:\x1b[0m", error.message);
-      return startApp.call(this, connection);
+      startApp(connection);
     }
 
     if (results.length === 0) {
       console.log('\x1b[31mNo departments found.\x1b[0m');
     } else {
       const headers = ['Department ID', 'Department Name'];
-      const colWidths = [15, 20];
+      const colWidths = [15, 25];
 
       displayTable(results, headers, colWidths, (row) => [
         row.id,
@@ -22,7 +22,7 @@ function viewAllDepartments(connection, startApp) {
       ]);
     }
 
-    startApp.call(this, connection);
+    startApp(connection);
   });
 }
 
@@ -42,14 +42,14 @@ function viewAllRoles(connection, startApp) {
   connection.query(query, (error, results) => {
     if (error) {
       console.error('\x1b[31mError retrieving roles:\x1b[0m', error.message);
-      return startApp.call(this, connection);
+      startApp(connection);
     }
 
     if (results.length === 0) {
       console.log('\x1b[31mNo roles found.\x1b[0m');
     } else {
       const headers = ['Role ID', 'Job Title', 'Department Name', 'Salary'];
-      const colWidths = [15, 30, 20, 15];
+      const colWidths = [15, 30, 25, 15];
 
       displayTable(results, headers, colWidths, (row) => [
         row['Role ID'],
@@ -59,7 +59,7 @@ function viewAllRoles(connection, startApp) {
       ]);
     }
 
-    startApp.call(this, connection);
+    startApp(connection);
   });
 }
 
@@ -85,15 +85,15 @@ function viewAllEmployees(connection, startApp) {
 
   connection.query(query, (error, results) => {
     if (error) {
-      console.error("\x1b[31mError retrieving employees:\x1b[0m", error.message);
-      return startApp.call(this, connection);
+      console.error('\x1b[31mError retrieving employees:\x1b[0m', error.message);
+      startApp(connection);
     }
 
     if (results.length === 0) {
-      console.log("\x1b[31mNo employees found.\x1b[0m");
+      console.log('\x1b[31mNo employees found.\x1b[0m');
     } else {
       const headers = ['Employee ID', 'First Name', 'Last Name', 'Job Title', 'Department Name', 'Salary', 'Manager'];
-      const colWidths = [15, 15, 15, 30, 20, 10, 20];
+      const colWidths = [15, 15, 15, 30, 25, 15, 20];
 
       displayTable(results, headers, colWidths, (row) => [
         row['Employee ID'],
@@ -106,35 +106,93 @@ function viewAllEmployees(connection, startApp) {
       ]);
     }
 
-    startApp.call(this, connection);
+    startApp(connection);
   });
 }
 
 function addDepartment(connection, startApp) {
   inquirer
     .prompt({
-      type: "input",
-      name: "name",
-      message: "Enter the name of the new department:",
-      validate: (input) => validateInput(input, 'Please enter a valid department name.')
+      type: 'input',
+      name: 'name',
+      message: 'Enter the name of the new department:',
+      validate: (input) => validateInput(input, '\x1b[31mPlease enter a valid department name.\x1b[0m')
     })
     .then((answer) => {
-      const sql = "INSERT INTO department (name) VALUES (?)";
-      const values = [answer.name.trim()];
+      const sql = 'INSERT INTO department (name) VALUES (?)';
+      const values = [answer.name];
 
       connection.query(sql, values, (error) => {
         if (error) {
-          console.error("Error adding department:", error.message);
+          console.error('\x1b[31mError adding department:\x1b[0m', error.message);
         } else {
-          console.log("\x1b[32mDepartment added successfully!\x1b[0m");
+          console.log('\x1b[32mDepartment added successfully!\x1b[0m');
         }
-        startApp.call(this, connection);
+        startApp(connection);
       });
     })
     .catch((error) => {
-      console.error("Error in inquirer prompt:", error.message);
-      startApp.call(this, connection);
+      console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
+      startApp(connection);
     });
+}
+
+function addRole(connection, startApp) {
+  const query = 'SELECT * FROM department';
+
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error('\x1b[31mError retrieving department data:\x1b[0m', error.message);
+      startApp(connection);
+    }
+
+    const departmentChoices = results.map((department) => ({ name: department.name }));
+
+    inquirer
+      .prompt([
+        {
+          type: 'input',
+          name: 'title',
+          message: 'Enter the title of the new role:',
+          validate: (input) => validateInput(input, '\x1b[31mPlease enter a valid role title.\x1b[0m')
+        },
+        {
+          type: 'input',
+          name: 'salary',
+          message: 'Enter the salary for the new role:',
+          validate: (input) => validateSalary(input, '\x1b[31mPlease enter a valid salary.\x1b[0m'),
+        },
+        {
+          type: 'list',
+          name: 'department',
+          message: 'Select the department for the new role:',
+          choices: departmentChoices,
+        },
+      ])
+      .then((answers) => {
+        const selectedDepartment = results.find((department) => department.name === answers.department);
+
+        const sql = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
+        const values = [
+          answers.title, 
+          answers.salary, 
+          selectedDepartment.id
+        ];
+
+        connection.query(sql, values, (error) => {
+          if (error) {
+            console.error('\x1b[31mError adding role:\x1b[0m', error.message);
+          } else {
+            console.log("\x1b[32mRole added successfully!\x1b[0m");
+          }
+          startApp(connection);
+        });
+      })
+      .catch((error) => {
+        console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
+        startApp(connection);
+      });
+  });
 }
 
 function displayTable(rows, headers, colWidths, rowFormatter) {
@@ -150,9 +208,16 @@ function displayTable(rows, headers, colWidths, rowFormatter) {
   console.log(table.toString());
 }
 
-function validateInput(input, errorMessage) {
-  if (!/^[a-zA-Z\s]+$/.test(input.trim()) || !/^[^\d]+$/.test(input.trim())) {
-    return errorMessage;
+function validateInput(input, error) {
+  if (!/^[a-zA-Z\s]+$/.test(input.trim())) {
+    return error;
+  }
+  return true;
+}
+
+function validateSalary(input, error) {
+  if (input.trim() === '' || isNaN(input) || parseFloat(input) <= 0) {
+    return error;
   }
   return true;
 }
@@ -162,4 +227,5 @@ module.exports = {
   viewAllRoles,
   viewAllEmployees,
   addDepartment,
+  addRole,
 }
