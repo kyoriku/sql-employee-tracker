@@ -353,6 +353,64 @@ function updateEmployeeRole(connection, startApp) {
   });
 }
 
+function updateEmployeeManager(connection, startApp) {
+  const employeesQuery = 'SELECT id, first_name, last_name FROM employee';
+
+  connection.query(employeesQuery, (error, employeeResults) => {
+    if (error) {
+      console.error('\x1b[31mError retrieving employee data:\x1b[0m', error.message);
+      startApp(connection);
+    }
+
+    if (employeeResults.length === 0) {
+      console.log('\x1b[31mNo employees available. Please add an employee first.\x1b[0m');
+      startApp(connection);
+    }
+
+    const employeeChoices = employeeResults.map((employee) => `${employee.first_name} ${employee.last_name}`);
+
+    inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'employeeName',
+          message: 'Select the employee to update manager:',
+          choices: employeeChoices,
+        },
+        {
+          type: 'list',
+          name: 'managerName',
+          message: 'Select the new manager:',
+          choices: [...employeeChoices, 'None'],
+        },
+      ])
+      .then((answers) => {
+        const selectedEmployee = employeeResults.find((employee) => `${employee.first_name} ${employee.last_name}` === answers.employeeName);
+        const selectedManager = answers.managerName === 'None' ? null : employeeResults.find((employee) => `${employee.first_name} ${employee.last_name}` === answers.managerName);
+
+        if (!selectedEmployee) {
+          console.log('\x1b[31mInvalid employee selected. Please try again.\x1b[0m');
+        } else {
+          const updateQuery = 'UPDATE employee SET manager_id = ? WHERE id = ?';
+          const updateValues = [selectedManager ? selectedManager.id : null, selectedEmployee.id];
+
+          connection.query(updateQuery, updateValues, (error) => {
+            if (error) {
+              console.error('\x1b[31mError updating employee manager:\x1b[0m', error.message);
+            } else {
+              console.log('\x1b[32mEmployee manager updated successfully!\x1b[0m');
+            }
+            startApp(connection);
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
+        startApp(connection);
+      });
+  });
+}
+
 module.exports = {
   viewAllDepartments,
   viewAllRoles,
@@ -361,4 +419,5 @@ module.exports = {
   addRole,
   addEmployee,
   updateEmployeeRole,
+  updateEmployeeManager,
 }
