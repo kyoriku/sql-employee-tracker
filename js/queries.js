@@ -614,6 +614,55 @@ function deleteDepartment(connection, startApp) {
   });
 }
 
+function deleteRole(connection, startApp) {
+  const rolesQuery = 'SELECT * FROM role';
+
+  connection.query(rolesQuery, (error, roleResults) => {
+    if (error) {
+      console.error('\x1b[31mError querying roles:\x1b[0m', error.message);
+      return startApp(connection);
+    }
+
+    if (roleResults.length === 0) {
+      console.log('\x1b[31mNo roles found.\x1b[0m');
+      return startApp(connection);
+    }
+
+    inquirer
+      .prompt({
+        type: 'list',
+        name: 'selectedRole',
+        message: 'Select a role to delete:',
+        choices: roleResults.map((role) => role.title),
+      })
+      .then((answers) => {
+        const selectedRole = roleResults.find(
+          (role) => role.title === answers.selectedRole
+        );
+
+        if (!selectedRole) {
+          console.log('\x1b[31mInvalid role selected. Please try again.\x1b[0m');
+          return startApp(connection);
+        }
+
+        const deleteQuery = 'DELETE FROM role WHERE id = ?';
+        connection.query(deleteQuery, [selectedRole.id], (error) => {
+          if (error) {
+            console.error('\x1b[31mError deleting role:\x1b[0m', error.message);
+          } else {
+            console.log(`\x1b[32mRole "${answers.selectedRole}" deleted successfully!\x1b[0m`);
+          }
+
+          return startApp(connection);
+        });
+      })
+      .catch((error) => {
+        console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
+        return startApp(connection);
+      });
+  });
+}
+
 module.exports = {
   viewAllDepartments,
   viewAllRoles,
@@ -626,4 +675,5 @@ module.exports = {
   viewEmployeesByManager,
   viewEmployeesByDepartment,
   deleteDepartment,
+  deleteRole,
 }
