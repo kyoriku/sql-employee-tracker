@@ -411,6 +411,90 @@ function updateEmployeeManager(connection, startApp) {
   });
 }
 
+function viewEmployeesByManager(connection, startApp) {
+  const managersQuery = `
+    SELECT 
+      DISTINCT CONCAT(manager.first_name, ' ', manager.last_name) AS manager 
+    FROM 
+      employee 
+    LEFT JOIN
+      employee AS manager ON employee.manager_id = manager.id 
+    WHERE 
+      manager.id IS NOT NULL`;
+
+  connection.query(managersQuery, (error, results) => {
+    if (error) {
+      console.error('\x1b[31mError retrieving manager data:\x1b[0m', error);
+      return startApp(connection);
+    }
+
+    if (results.length === 0) {
+      console.log('\x1b[31mNo managers available. Please add a manager first.\x1b[0m');
+      return startApp(connection);
+    }
+
+    const managerChoices = results.map((manager) => manager.manager);
+
+    inquirer
+      .prompt({
+        type: 'list',
+        name: 'selectedManager',
+        message: 'Select a manager:',
+        choices: managerChoices,
+      })
+      .then((answers) => {
+        const query = `
+          SELECT
+            employee.id AS 'Employee ID',
+            employee.first_name AS 'First Name',
+            employee.last_name AS 'Last Name',
+            role.title AS 'Job Title',
+            department.name AS 'Department Name',
+            role.salary AS 'Salary'
+          FROM
+            employee
+          LEFT JOIN
+            role ON employee.role_id = role.id
+          LEFT JOIN
+            department ON role.department_id = department.id
+          LEFT JOIN
+            employee AS manager ON employee.manager_id = manager.id
+          WHERE
+            CONCAT(manager.first_name, ' ', manager.last_name) = ?
+        `;
+
+        connection.query(query, [answers.selectedManager], (error, results) => {
+          if (error) {
+            console.error('\x1b[31mError retrieving manager data:\x1b[0m', error);
+            return startApp(connection);
+          }
+
+          if (results.length === 0) {
+            console.log(`\x1b[31mNo employees found for manager ${answers.selectedManager}.\x1b[0m`);
+          } else {
+            const headers = ['Employee ID', 'First Name', 'Last Name', 'Job Title', 'Department Name', 'Salary'];
+            const colWidths = [15, 15, 15, 30, 25, 15];
+
+            displayTable(results, headers, colWidths, (row) => [
+              row['Employee ID'],
+              row['First Name'],
+              row['Last Name'],
+              row['Job Title'],
+              row['Department Name'],
+              row['Salary']
+            ]);
+          }
+
+          startApp(connection);
+        });
+      })
+      .catch((error) => {
+        console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
+        startApp(connection);
+      });
+  });
+}
+
 module.exports = {
   viewAllDepartments,
   viewAllRoles,
@@ -420,4 +504,5 @@ module.exports = {
   addEmployee,
   updateEmployeeRole,
   updateEmployeeManager,
+  viewEmployeesByManager
 }
