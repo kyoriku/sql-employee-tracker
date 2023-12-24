@@ -495,6 +495,76 @@ function viewEmployeesByManager(connection, startApp) {
   });
 }
 
+function viewEmployeesByDepartment(connection, startApp) {
+  const departmentsQuery = 'SELECT * FROM department';
+
+  connection.query(departmentsQuery, (error, departmentResults) => {
+    if (error) {
+      console.error('\x1b[31mError querying departments:\x1b[0m', error.message);
+      return startApp(connection);
+    }
+
+    if (departmentResults.length === 0) {
+      console.log('\x1b[31mNo departments found.\x1b[0m');
+      return startApp(connection);
+    }
+
+    inquirer
+      .prompt({
+        type: 'list',
+        name: 'selectedDepartment',
+        message: 'Select a department to view employees:',
+        choices: departmentResults.map(department => department.name),
+      })
+      .then((answers) => {
+        const query = `
+          SELECT
+            employee.id AS 'Employee ID',
+            employee.first_name AS 'First Name',
+            employee.last_name AS 'Last Name',
+            role.title AS 'Job Title',
+            role.salary AS 'Salary'
+          FROM
+            employee
+          LEFT JOIN
+            role ON employee.role_id = role.id
+          LEFT JOIN
+            department ON role.department_id = department.id
+          WHERE
+            department.name = ?
+        `;
+
+        connection.query(query, [answers.selectedDepartment], (error, results) => {
+          if (error) {
+            console.error('\x1b[31mError querying employees by department:\x1b[0m', error.message);
+            return startApp(connection);
+          }
+
+          if (results.length === 0) {
+            console.log(`\x1b[31mNo employees found for department ${answers.selectedDepartment}.\x1b[0m`);
+          } else {
+            const headers = ['Employee ID', 'First Name', 'Last Name', 'Job Title', 'Salary'];
+            const colWidths = [15, 15, 15, 30, 10];
+
+            displayTable(results, headers, colWidths, (row) => [
+              row['Employee ID'],
+              row['First Name'],
+              row['Last Name'],
+              row['Job Title'],
+              row['Salary']
+            ]);
+          }
+
+          startApp(connection);
+        });
+      })
+      .catch((error) => {
+        console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
+        startApp(connection);
+      });
+  });
+}
+
 module.exports = {
   viewAllDepartments,
   viewAllRoles,
@@ -504,5 +574,6 @@ module.exports = {
   addEmployee,
   updateEmployeeRole,
   updateEmployeeManager,
-  viewEmployeesByManager
+  viewEmployeesByManager,
+  viewEmployeesByDepartment,
 }
