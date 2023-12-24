@@ -8,7 +8,7 @@ function viewAllDepartments(connection, startApp) {
   connection.query(query, (error, results) => {
     if (error) {
       console.error("\x1b[31mError retrieving departments:\x1b[0m", error.message);
-      startApp(connection);
+      return startApp(connection);
     }
 
     if (results.length === 0) {
@@ -23,7 +23,7 @@ function viewAllDepartments(connection, startApp) {
       ]);
     }
 
-    startApp(connection);
+    return startApp(connection);
   });
 }
 
@@ -43,7 +43,7 @@ function viewAllRoles(connection, startApp) {
   connection.query(query, (error, results) => {
     if (error) {
       console.error('\x1b[31mError retrieving roles:\x1b[0m', error.message);
-      startApp(connection);
+      return startApp(connection);
     }
 
     if (results.length === 0) {
@@ -60,7 +60,7 @@ function viewAllRoles(connection, startApp) {
       ]);
     }
 
-    startApp(connection);
+    return startApp(connection);
   });
 }
 
@@ -87,7 +87,7 @@ function viewAllEmployees(connection, startApp) {
   connection.query(query, (error, results) => {
     if (error) {
       console.error('\x1b[31mError retrieving employees:\x1b[0m', error.message);
-      startApp(connection);
+      return startApp(connection);
     }
 
     if (results.length === 0) {
@@ -107,7 +107,7 @@ function viewAllEmployees(connection, startApp) {
       ]);
     }
 
-    startApp(connection);
+    return startApp(connection);
   });
 }
 
@@ -134,7 +134,7 @@ function addDepartment(connection, startApp) {
     })
     .catch((error) => {
       console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
-      startApp(connection);
+      return startApp(connection);
     });
 }
 
@@ -144,7 +144,7 @@ function addRole(connection, startApp) {
   connection.query(query, (error, results) => {
     if (error) {
       console.error('\x1b[31mError retrieving department data:\x1b[0m', error.message);
-      startApp(connection);
+      return startApp(connection);
     }
 
     const departmentChoices = results.map((department) => ({ name: department.name }));
@@ -186,12 +186,12 @@ function addRole(connection, startApp) {
           } else {
             console.log("\x1b[32mRole added successfully!\x1b[0m");
           }
-          startApp(connection);
+          return startApp(connection);
         });
       })
       .catch((error) => {
         console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
-        startApp(connection);
+        return startApp(connection);
       });
   });
 }
@@ -203,7 +203,7 @@ function addEmployee(connection, startApp) {
   connection.query(rolesQuery, (error, roleResults) => {
     if (error) {
       console.error('\x1b[31mError retrieving role data:\x1b[0m', error.message);
-      startApp(connection);
+      return startApp(connection);
     }
 
     const roles = roleResults.map(({ id, title }) => ({
@@ -214,7 +214,7 @@ function addEmployee(connection, startApp) {
     connection.query(employeesQuery, (error, employeeResults) => {
       if (error) {
         console.error('\x1b[31mError retrieving employee data:\x1b[0m', error.message);
-        startApp(connection);
+        return startApp(connection);
       }
 
       const managers = employeeResults.map(({ id, name }) => ({
@@ -264,12 +264,12 @@ function addEmployee(connection, startApp) {
             } else {
               console.log('\x1b[32mEmployee added successfully!\x1b[0m');
             }
-            startApp(connection);
+            return startApp(connection);
           });
         })
         .catch((error) => {
           console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
-          startApp(connection);
+          return startApp(connection);
         });
     });
   });
@@ -292,23 +292,23 @@ function updateEmployeeRole(connection, startApp) {
   connection.query(employeesQuery, (error, employeeResults) => {
     if (error) {
       console.error('\x1b[31mError retrieving employee data:\x1b[0m', error.message);
-      startApp(connection);
+      return startApp(connection);
     }
 
     if (employeeResults.length === 0) {
       console.log('\x1b[31mNo employees available. Please add an employee first.\x1b[0m');
-      startApp(connection);
+      return startApp(connection);
     }
 
     connection.query(rolesQuery, (error, roleResults) => {
       if (error) {
         console.error('\x1b[31mError retrieving role data:\x1b[0m', error.message);
-        startApp(connection);
+        return startApp(connection);
       }
 
       if (roleResults.length === 0) {
         console.log('\x1b[31mNo roles available. Please add a role first.\x1b[0m');
-        startApp(connection);
+        return startApp(connection);
       }
 
       inquirer
@@ -332,7 +332,7 @@ function updateEmployeeRole(connection, startApp) {
 
           if (!selectedEmployee || !selectedRole) {
             console.log('\x1b[31mInvalid employee or role selected. Please try again.\x1b[0m');
-            startApp(connection);
+            return startApp(connection);
           }
 
           const query = 'UPDATE employee SET role_id = ? WHERE id = ?';
@@ -342,12 +342,12 @@ function updateEmployeeRole(connection, startApp) {
             } else {
               console.log('\x1b[32mEmployee role updated successfully!\x1b[0m');
             }
-            startApp(connection);
+            return startApp(connection);
           });
         })
         .catch((error) => {
           console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
-          startApp(connection);
+          return startApp(connection);
         });
     });
   });
@@ -359,12 +359,12 @@ function updateEmployeeManager(connection, startApp) {
   connection.query(employeesQuery, (error, employeeResults) => {
     if (error) {
       console.error('\x1b[31mError retrieving employee data:\x1b[0m', error.message);
-      startApp(connection);
+      return startApp(connection);
     }
 
     if (employeeResults.length === 0) {
       console.log('\x1b[31mNo employees available. Please add an employee first.\x1b[0m');
-      startApp(connection);
+      return startApp(connection);
     }
 
     const employeeChoices = employeeResults.map((employee) => `${employee.first_name} ${employee.last_name}`);
@@ -400,13 +400,13 @@ function updateEmployeeManager(connection, startApp) {
             } else {
               console.log('\x1b[32mEmployee manager updated successfully!\x1b[0m');
             }
-            startApp(connection);
+            return startApp(connection);
           });
         }
       })
       .catch((error) => {
         console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
-        startApp(connection);
+        return startApp(connection);
       });
   });
 }
@@ -485,12 +485,12 @@ function viewEmployeesByManager(connection, startApp) {
             ]);
           }
 
-          startApp(connection);
+          return startApp(connection);
         });
       })
       .catch((error) => {
         console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
-        startApp(connection);
+        return startApp(connection);
       });
   });
 }
@@ -555,12 +555,61 @@ function viewEmployeesByDepartment(connection, startApp) {
             ]);
           }
 
-          startApp(connection);
+          return startApp(connection);
         });
       })
       .catch((error) => {
         console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
-        startApp(connection);
+        return startApp(connection);
+      });
+  });
+}
+
+function deleteDepartment(connection, startApp) {
+  const departmentsQuery = 'SELECT * FROM department';
+
+  connection.query(departmentsQuery, (error, departmentResults) => {
+    if (error) {
+      console.error('\x1b[31mError querying departments:\x1b[0m', error.message);
+      return startApp(connection);
+    }
+
+    if (departmentResults.length === 0) {
+      console.log('\x1b[31mNo departments found.\x1b[0m');
+      return startApp(connection);
+    }
+
+    inquirer
+      .prompt({
+        type: 'list',
+        name: 'selectedDepartment',
+        message: 'Select a department to delete:',
+        choices: departmentResults.map((department) => department.name),
+      })
+      .then((answers) => {
+        const selectedDepartment = departmentResults.find(
+          (department) => department.name === answers.selectedDepartment
+        );
+
+        if (!selectedDepartment) {
+          console.log('\x1b[31mInvalid department selected. Please try again.\x1b[0m');
+          return startApp(connection);
+        }
+
+        const deleteQuery = 'DELETE FROM department WHERE id = ?';
+        connection.query(deleteQuery, [selectedDepartment.id], (error) => {
+          if (error) {
+            console.error('\x1b[31mError deleting department:\x1b[0m', error.message);
+          } else {
+            console.log(`\x1b[32mDepartment "${answers.selectedDepartment}" deleted successfully!\x1b[0m`);
+          }
+
+          return startApp(connection);
+        });
+      })
+      .catch((error) => {
+        console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
+        return startApp(connection);
       });
   });
 }
@@ -576,4 +625,5 @@ module.exports = {
   updateEmployeeManager,
   viewEmployeesByManager,
   viewEmployeesByDepartment,
+  deleteDepartment,
 }
