@@ -1,4 +1,7 @@
+// Import the inquirer library for handling command-line prompts
 const inquirer = require('inquirer');
+
+// Import the queries module containing various database queries
 const {
   viewAllDepartments,
   viewAllRoles,
@@ -16,7 +19,9 @@ const {
   viewDepartmentBudget,
 } = require('./queries');
 
+// Function to start the application, taking a connection object as a parameter
 function startApp(connection) {
+  // Prompt the user with a list of actions to choose from
   inquirer
     .prompt({
       type: 'list',
@@ -41,7 +46,9 @@ function startApp(connection) {
       ],
     })
     .then((selected) => {
+      // Use a switch statement to handle different user-selected actions
       switch (selected.action) {
+        // Call corresponding query functions based on the user's selection
         case 'View all departments':
           viewAllDepartments(connection, startApp);
           break;
@@ -84,17 +91,20 @@ function startApp(connection) {
         case 'View total utilized budget of a department':
           viewDepartmentBudget(connection, startApp);
           break;
+        // If Exit is selected, log a goodbye message and exit the process
         case 'Exit':
           console.log('\x1b[32mGoodbye!\x1b[0m');
           process.exit();
       }
     })
+    // Handle errors that may occur during the user interaction
     .catch((error) => {
       console.error('\x1b[31mError encountered during user interaction:\x1b[0m', error.message);
-      startApp(connection)
+      return startApp(connection)
     });
 }
 
+// Export the startApp function for use in the server.js file
 module.exports = {
   startApp,
 };
