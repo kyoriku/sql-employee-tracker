@@ -725,6 +725,69 @@ function deleteEmployee(connection, startApp) {
   });
 }
 
+function viewDepartmentBudget(connection, startApp) {
+  const departmentsQuery = 'SELECT * FROM department';
+
+  connection.query(departmentsQuery, (error, departmentResults) => {
+    if (error) {
+      console.error('\x1b[31mError querying departments:\x1b[0m', error.message);
+      return startApp(connection);
+    }
+
+    if (departmentResults.length === 0) {
+      console.log('\x1b[31mNo departments found.\x1b[0m');
+      return startApp(connection);
+    }
+
+    inquirer
+      .prompt({
+        type: 'list',
+        name: 'selectedDepartment',
+        message: 'Select a department to view the total budget:',
+        choices: departmentResults.map((department) => department.name),
+      })
+      .then((answers) => {
+        const selectedDepartment = departmentResults.find(
+          (department) => department.name === answers.selectedDepartment
+        );
+
+        if (!selectedDepartment) {
+          console.log('\x1b[31mInvalid department selected. Please try again.\x1b[0m');
+          return startApp(connection);
+        }
+
+        const query = `
+          SELECT
+            SUM(role.salary) AS total_budget
+          FROM
+            employee
+          INNER JOIN
+            role ON employee.role_id = role.id
+          INNER JOIN
+            department ON role.department_id = department.id
+          WHERE
+            department.name = ?
+        `;
+
+        connection.query(query, [answers.selectedDepartment], (error, result) => {
+          if (error) {
+            console.error('\x1b[31mError querying total budget:\x1b[0m', error.message);
+            return startApp(connection);
+          }
+
+          const totalBudget = result[0].total_budget || 0;
+          console.log(`\x1b[32mTotal Utilized Budget for ${answers.selectedDepartment} department: $${Number(totalBudget).toFixed()}\x1b[0m`);
+
+          return startApp(connection);
+        });
+      })
+      .catch((error) => {
+        console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
+        return startApp(connection);
+      });
+  });
+}
+
 module.exports = {
   viewAllDepartments,
   viewAllRoles,
@@ -739,4 +802,5 @@ module.exports = {
   deleteDepartment,
   deleteRole,
   deleteEmployee,
+  viewDepartmentBudget
 }
