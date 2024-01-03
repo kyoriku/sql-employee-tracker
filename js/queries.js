@@ -129,7 +129,7 @@ function addDepartment(connection, startApp) {
         } else {
           console.log('\x1b[32mDepartment added successfully!\x1b[0m');
         }
-        startApp(connection);
+        return startApp(connection);
       });
     })
     .catch((error) => {
@@ -171,7 +171,9 @@ function addRole(connection, startApp) {
         },
       ])
       .then((answers) => {
-        const selectedDepartment = results.find((department) => department.name === answers.department);
+        const selectedDepartment = results.find((department) =>
+          department.name === answers.department
+        );
 
         const sql = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
         const values = [
@@ -327,8 +329,13 @@ function updateEmployeeRole(connection, startApp) {
           },
         ])
         .then((answers) => {
-          const selectedEmployee = employeeResults.find((employee) => `${employee.first_name} ${employee.last_name}` === answers.employee);
-          const selectedRole = roleResults.find((role) => role.title === answers.role);
+          const selectedEmployee = employeeResults.find((employee) =>
+            `${employee.first_name} ${employee.last_name}` === answers.employee
+          );
+
+          const selectedRole = roleResults.find((role) =>
+            role.title === answers.role
+          );
 
           if (!selectedEmployee || !selectedRole) {
             console.log('\x1b[31mInvalid employee or role selected. Please try again.\x1b[0m');
@@ -385,8 +392,14 @@ function updateEmployeeManager(connection, startApp) {
         },
       ])
       .then((answers) => {
-        const selectedEmployee = employeeResults.find((employee) => `${employee.first_name} ${employee.last_name}` === answers.employeeName);
-        const selectedManager = answers.managerName === 'None' ? null : employeeResults.find((employee) => `${employee.first_name} ${employee.last_name}` === answers.managerName);
+        const selectedEmployee = employeeResults.find((employee) =>
+          `${employee.first_name} ${employee.last_name}` === answers.employeeName
+        );
+
+        const selectedManager = answers.managerName === 'None' ?
+          null : employeeResults.find((employee) =>
+            `${employee.first_name} ${employee.last_name}` === answers.managerName
+        );      
 
         if (!selectedEmployee) {
           console.log('\x1b[31mInvalid employee selected. Please try again.\x1b[0m');
@@ -663,6 +676,55 @@ function deleteRole(connection, startApp) {
   });
 }
 
+function deleteEmployee(connection, startApp) {
+  const employeesQuery = 'SELECT * FROM employee';
+
+  connection.query(employeesQuery, (error, employeeResults) => {
+    if (error) {
+      console.error('\x1b[31mError querying employees:\x1b[0m', error.message);
+      return startApp(connection);
+    }
+
+    if (employeeResults.length === 0) {
+      console.log('\x1b[31mNo employees found.\x1b[0m');
+      return startApp(connection);
+    }
+
+    inquirer
+      .prompt({
+        type: 'list',
+        name: 'selectedEmployee',
+        message: 'Select an employee to delete:',
+        choices: employeeResults.map((employee) => `${employee.first_name} ${employee.last_name}`),
+      })
+      .then((answers) => {
+        const selectedEmployee = employeeResults.find(
+          (employee) => `${employee.first_name} ${employee.last_name}` === answers.selectedEmployee
+        );
+
+        if (!selectedEmployee) {
+          console.log('\x1b[31mInvalid employee selected. Please try again.\x1b[0m');
+          return startApp(connection);
+        }
+
+        const deleteQuery = 'DELETE FROM employee WHERE id = ?';
+        connection.query(deleteQuery, [selectedEmployee.id], (error) => {
+          if (error) {
+            console.error('\x1b[31mError deleting employee:\x1b[0m', error.message);
+          } else {
+            console.log(`\x1b[32mEmployee "${answers.selectedEmployee}" deleted successfully!\x1b[0m`);
+          }
+
+          return startApp(connection);
+        });
+      })
+      .catch((error) => {
+        console.error('\x1b[31mError in inquirer prompt:\x1b[0m', error.message);
+        return startApp(connection);
+      });
+  });
+}
+
 module.exports = {
   viewAllDepartments,
   viewAllRoles,
@@ -676,4 +738,5 @@ module.exports = {
   viewEmployeesByDepartment,
   deleteDepartment,
   deleteRole,
+  deleteEmployee,
 }
