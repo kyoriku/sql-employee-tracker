@@ -2,12 +2,12 @@
 const inquirer = require('inquirer');
 
 // Import functions for viewing data from the 'dataView' module
-const { viewAllDepartments, 
-  viewAllRoles, 
-  viewAllEmployees, 
-  viewEmployeesByManager, 
-  viewEmployeesByDepartment, 
-  viewDepartmentBudget 
+const { viewAllDepartments,
+  viewAllRoles,
+  viewAllEmployees,
+  viewEmployeesByManager,
+  viewEmployeesByDepartment,
+  viewDepartmentBudget
 } = require('./dataView');
 
 // Import functions for adding data from the 'dataAdd' module
@@ -18,7 +18,6 @@ const { updateEmployeeRole, updateEmployeeManager } = require('./dataUpdate');
 
 // Import functions for deleting data from the 'dataDelete' module
 const { deleteDepartment, deleteRole, deleteEmployee } = require('./dataDelete');
-
 
 // Function to start the application, taking a connection object as a parameter
 function startApp(connection) {
@@ -92,17 +91,21 @@ function startApp(connection) {
         case 'View total utilized budget of a department':
           viewDepartmentBudget(connection, startApp);
           break;
-        // If Exit is selected, log a goodbye message and exit the process
+        // If Exit is selected, log a goodbye message to the console and exit the process
         case 'Exit':
           console.log('\x1b[32mGoodbye!\x1b[0m');
           process.exit();
       }
     })
-    // Handle errors that may occur during the user interaction
+    // Handle any errors that occur during the inquirer prompt or user interaction
     .catch((error) => {
+      // Log an error message in red, indicating that an error was encountered during user interaction
       console.error('\x1b[31mError encountered during user interaction:\x1b[0m', error.message);
-      return startApp(connection)
+
+      // Call the startApp function to return to the main menu
+      return startApp(connection);
     });
+
 }
 
 // Export the startApp function for use in the 'server.js' file

@@ -1,7 +1,7 @@
 // Import the inquirer library for handling command-line prompts
 const inquirer = require('inquirer');
 
-// Import utility functions for displaying tables and input validation
+// Import utility function for displaying tables
 const { displayTable } = require('./utils');
 
 // Function to view all departments in the database

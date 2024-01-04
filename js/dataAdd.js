@@ -1,7 +1,7 @@
 // Import the inquirer library for handling command-line prompts
 const inquirer = require('inquirer');
 
-// Import utility functions for displaying tables and input validation
+// Import utility function for input validation
 const { validateInput, validateSalary } = require('./utils');
 
 // Function to add a new department to the database
@@ -96,7 +96,7 @@ function addRole(connection, startApp) {
 
         // SQL query to insert a new role into the role table
         const sql = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
-        // Values to be inserted into the query (role title, salary, and department_id)
+        // Values to be inserted into the query (role title, salary, and department id)
         const values = [
           answers.title,
           answers.salary,
