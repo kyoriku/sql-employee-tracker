@@ -105,6 +105,4 @@ function startApp(connection) {
 }
 
 // Export the startApp function for use in the server.js file
-module.exports = {
-  startApp,
-};
+module.exports = { startApp };
