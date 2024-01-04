@@ -1,23 +1,24 @@
 // Import the inquirer library for handling command-line prompts
 const inquirer = require('inquirer');
 
-// Import the queries module containing various database queries
-const {
-  viewAllDepartments,
-  viewAllRoles,
-  viewAllEmployees,
-  addDepartment,
-  addRole,
-  addEmployee,
-  updateEmployeeRole,
-  updateEmployeeManager,
-  viewEmployeesByManager,
-  viewEmployeesByDepartment,
-  deleteDepartment,
-  deleteRole,
-  deleteEmployee,
-  viewDepartmentBudget,
-} = require('./queries');
+// Import functions for viewing data from the 'dataView' module
+const { viewAllDepartments, 
+  viewAllRoles, 
+  viewAllEmployees, 
+  viewEmployeesByManager, 
+  viewEmployeesByDepartment, 
+  viewDepartmentBudget 
+} = require('./dataView');
+
+// Import functions for adding data from the 'dataAdd' module
+const { addDepartment, addRole, addEmployee } = require('./dataAdd');
+
+// Import functions for updating data from the 'dataUpdate' module
+const { updateEmployeeRole, updateEmployeeManager } = require('./dataUpdate');
+
+// Import functions for deleting data from the 'dataDelete' module
+const { deleteDepartment, deleteRole, deleteEmployee } = require('./dataDelete');
+
 
 // Function to start the application, taking a connection object as a parameter
 function startApp(connection) {
@@ -104,5 +105,5 @@ function startApp(connection) {
     });
 }
 
-// Export the startApp function for use in the server.js file
+// Export the startApp function for use in the 'server.js' file
 module.exports = { startApp };
