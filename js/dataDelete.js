@@ -59,7 +59,7 @@ function deleteDepartment(connection, startApp) {
             console.error('\x1b[31mError deleting department:\x1b[0m', error.message);
           } else {
             // Log a success message in green if the department is deleted successfully
-            console.log(`\x1b[32mDepartment "${answers.selectedDepartment}" deleted successfully!\x1b[0m`);
+            console.log(`\x1b[32mDepartment deleted successfully!\x1b[0m`);
           }
 
           // Call the startApp function to return to the main menu
@@ -134,7 +134,7 @@ function deleteRole(connection, startApp) {
             console.error('\x1b[31mError deleting role:\x1b[0m', error.message);
           } else {
             // Log a success message in green if the role is deleted successfully
-            console.log(`\x1b[32mRole "${answers.selectedRole}" deleted successfully!\x1b[0m`);
+            console.log(`\x1b[32mRole deleted successfully!\x1b[0m`);
           }
 
           // Call the startApp function to return to the main menu
@@ -209,7 +209,7 @@ function deleteEmployee(connection, startApp) {
             console.error('\x1b[31mError deleting employee:\x1b[0m', error.message);
           } else {
             // Log a success message in green if the employee is deleted successfully
-            console.log(`\x1b[32mEmployee "${answers.selectedEmployee}" deleted successfully!\x1b[0m`);
+            console.log(`\x1b[32mEmployee deleted successfully!\x1b[0m`);
           }
 
           // Call the startApp function to return to the main menu

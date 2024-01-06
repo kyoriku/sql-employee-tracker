@@ -423,7 +423,7 @@ function viewDepartmentBudget(connection, startApp) {
           const totalBudget = result[0].total_budget || 0;
           
           // Log the total utilized budget for the selected department in green
-          console.log(`\x1b[32mTotal Utilized Budget for ${answers.selectedDepartment} department: $${Number(totalBudget).toFixed()}\x1b[0m`);
+          console.log(`Total Utilized Budget for \x1b[32m${answers.selectedDepartment}\x1b[0m department: \x1b[32m$${Number(totalBudget).toFixed()}\x1b[0m`);
 
           // Call the startApp function to return to the main menu
           return startApp(connection);

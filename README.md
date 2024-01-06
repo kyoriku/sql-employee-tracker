@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## Description
-The SQL Employee Tracker is a command-line application designed to assist business owners in efficiently managing their company's employee database. This project leverages Node.js, Inquirer, and MySQL to provide a user-friendly interface for viewing, organizing, and planning business resources. The primary goal of this application is to simplify the management of departments, roles, and employees within a company. By utilizing a command-line interface, the tool enables business owners to perform essential tasks related to their workforce, enhancing organizational efficiency
+The SQL Employee Tracker is a command-line application designed to assist business owners in efficiently managing their company's employee database. This project leverages [Node.js](https://nodejs.org/en), [Inquirer](https://www.npmjs.com/package/inquirer/v/8.2.4), and [MySQL](https://www.mysql.com/) to provide a user-friendly interface for viewing, organizing, and planning business resources. The primary goal of this application is to simplify the management of departments, roles, and employees within a company. By utilizing a command-line interface, the tool enables business owners to perform essential tasks related to their workforce, enhancing organizational efficiency
 
 ## Table of Contents
 - [Features](#features)
@@ -36,7 +36,11 @@ To install the SQL Employee Tracker, follow these steps:
     ```bash
     cd sql-employee-tracker
     ```
-3. Install the required dependencies.
+3. Ensure you have a local MySQL database set up. You can use either [MySQL Workbench](https://www.mysql.com/products/workbench/) or [MySQL Shell](https://dev.mysql.com/doc/mysql-shell/8.0/en/mysql-shell-getting-started.html) to create the necessary database. If you haven't set up the database yet, follow these steps:
+    - Open MySQL Workbench or use the MySQL Shell.
+    - Create a new database, e.g., employee_tracker_db.
+    - Run the SQL scripts provided in the projects `db` directory to set up the necessary tables and seed the initial data.
+4. Install the required dependencies.
     ```bash
     npm install
     ```
@@ -53,6 +57,22 @@ To use the SQL Employee Tracker, follow these steps:
     npm start
     ```
 3. Follow the on-screen prompts to manage departments, roles, and employees.
+
+### Screenshots
+![Screenshot1](assets/images/viewAllDepartments.png)
+![Screenshot2](assets/images/viewAllRoles.png)
+![Screenshot3](assets/images/viewAllEmployees.png)
+![Screenshot4](assets/images/addDepartment.png)
+![Screenshot5](assets/images/addRole.png)
+![Screenshot6](assets/images/addEmployee.png)
+![Screenshot7](assets/images/updateEmployeeRole.png)
+![Screenshot8](assets/images/updateEmployeeManager.png)
+![Screenshot9](assets/images/viewEmployeeByManager.png)
+![Screenshot10](assets/images/viewEmployeeByDepartment.png)
+![Screenshot11](assets/images/deleteDepartment.png)
+![Screenshot12](assets/images/deleteRole.png)
+![Screenshot13](assets/images/deleteEmployee.png)
+![Screenshot14](assets/images/viewDepartmentBudget.png)
 
 ## License
 This application is covered by the [MIT](https://opensource.org/licenses/MIT) license.
