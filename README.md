@@ -62,6 +62,8 @@ To use the SQL Employee Tracker, follow these steps:
 
 https://github.com/kyoriku/sql-employee-tracker/assets/145511725/b25421ca-3f93-4199-bae7-7fd5ca5d3f14
 
+[Link to demo video](https://drive.google.com/file/d/1Rb1I1Fru8UOsFLFaA8BcbwsxXUqTfHHE/view?usp=drive_link)
+
 ### Screenshots
 ![Screenshot1](assets/images/viewAllDepartments.png)
 ![Screenshot2](assets/images/viewAllRoles.png)
