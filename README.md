@@ -58,6 +58,10 @@ To use the SQL Employee Tracker, follow these steps:
     ```
 3. Follow the on-screen prompts to manage departments, roles, and employees.
 
+### Demo Video
+
+https://github.com/kyoriku/sql-employee-tracker/assets/145511725/b25421ca-3f93-4199-bae7-7fd5ca5d3f14
+
 ### Screenshots
 ![Screenshot1](assets/images/viewAllDepartments.png)
 ![Screenshot2](assets/images/viewAllRoles.png)
