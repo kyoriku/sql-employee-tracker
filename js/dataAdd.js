@@ -60,9 +60,6 @@ function addRole(connection, startApp) {
       return startApp(connection);
     }
 
-    // Map the department data to an array of choices for inquirer prompt
-    const departmentChoices = results.map((department) => ({ name: department.name }));
-
     // Use inquirer to prompt the user for role information
     inquirer
       .prompt([
@@ -84,7 +81,8 @@ function addRole(connection, startApp) {
           type: 'list',
           name: 'department',
           message: 'Select the department for the new role:',
-          choices: departmentChoices,
+          // Map the department data to an array of choices for inquirer prompt
+          choices: results.map((department) => ({ name: department.name })),
         },
       ])
       // Handle the user's input using a promise

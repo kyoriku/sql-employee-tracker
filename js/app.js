@@ -2,7 +2,8 @@
 const inquirer = require('inquirer');
 
 // Import functions for viewing data from the 'dataView' module
-const { viewAllDepartments,
+const { 
+  viewAllDepartments,
   viewAllRoles,
   viewAllEmployees,
   viewEmployeesByManager,
@@ -11,13 +12,24 @@ const { viewAllDepartments,
 } = require('./dataView');
 
 // Import functions for adding data from the 'dataAdd' module
-const { addDepartment, addRole, addEmployee } = require('./dataAdd');
+const { 
+  addDepartment, 
+  addRole, 
+  addEmployee 
+} = require('./dataAdd');
 
 // Import functions for updating data from the 'dataUpdate' module
-const { updateEmployeeRole, updateEmployeeManager } = require('./dataUpdate');
+const { 
+  updateEmployeeRole, 
+  updateEmployeeManager 
+} = require('./dataUpdate');
 
 // Import functions for deleting data from the 'dataDelete' module
-const { deleteDepartment, deleteRole, deleteEmployee } = require('./dataDelete');
+const { 
+  deleteDepartment, 
+  deleteRole, 
+  deleteEmployee 
+} = require('./dataDelete');
 
 // Function to start the application, taking a connection object as a parameter
 function startApp(connection) {
